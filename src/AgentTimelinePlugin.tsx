@@ -21,7 +21,7 @@ export default class AgentTimelinePlugin extends FlexPlugin {
    * @param flex { typeof Flex }
    */
   async init(flex: typeof Flex, manager: Flex.Manager): Promise<void> {
-    flex.SideNav.Content.add(<SideBarButton key='access-overview-button'/>, {})
+    flex.SideNav.Content.add(<SideBarButton key='agent-timeline-button'/>, {})
 
     flex.ViewCollection.Content.add(
       <View name='agent-timeline' key='agent-timeline'>
