@@ -8,17 +8,30 @@ import {
 } from '@twilio-labs/serverless-runtime-types/types'
 import * as HelperType from './utils/helper.protected'
 
-const {ResponseOK, ohNoCatch} = <typeof HelperType>require(Runtime.getFunctions()['utils/helper'].path)
+const {ResponseOK, ohNoCatch, isSupervisor} = <typeof HelperType>require(Runtime.getFunctions()['utils/helper'].path)
 
 type Env = {
   WORKSPACE_SID: string
+  ACCOUNT_SID: string
+  AUTH_TOKEN: string
 }
 
-export const handler: ServerlessFunctionSignature<Env> = function (
+type Request = {
+  workerSid: string,
+  token: string
+}
+
+export const handler: ServerlessFunctionSignature<Env, Request> = async function (
   context: Context<Env>,
-  event: {},
+  event: Request,
   callback: ServerlessCallback,
 ) {
+
+  try {
+    await isSupervisor(event, context)
+  } catch (e) {
+    return ohNoCatch(e, callback)
+  }
 
   context.getTwilioClient().taskrouter.v1
     .workspaces(context.WORKSPACE_SID)

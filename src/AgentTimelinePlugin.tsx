@@ -21,6 +21,8 @@ export default class AgentTimelinePlugin extends FlexPlugin {
    * @param flex { typeof Flex }
    */
   async init(flex: typeof Flex, manager: Flex.Manager): Promise<void> {
+    if (!isSupervisor(manager)) return
+
     flex.SideNav.Content.add(<SideBarButton key='agent-timeline-button'/>, {})
 
     flex.ViewCollection.Content.add(
@@ -48,4 +50,11 @@ const registerAlerts = (flex: typeof Flex, manager: Flex.Manager) => {
     content: 'agentTimelineError',
     type: flex.NotificationType.error,
   })
+}
+
+export const isSupervisor = (manager: Flex.Manager) => {
+  // admin role is when you log on Flex from Twilio Console
+  const {attributes} = manager.workerClient as any
+
+  return attributes.roles.includes('admin') || attributes.roles.includes('supervisor')
 }

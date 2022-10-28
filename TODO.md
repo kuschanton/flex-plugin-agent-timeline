@@ -1,4 +1,5 @@
 # TODO
 - [x] Proper README
-- [ ] Check in function token if admin/supervisor
+- [x] Check in function token if admin/supervisor
+- [x] Show plugin only to supervisors
 - [ ] Date picker
