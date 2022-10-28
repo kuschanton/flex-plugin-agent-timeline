@@ -1,31 +1,55 @@
-# Your custom Twilio Flex Plugin
+# Screenshots
 
-Twilio Flex Plugins allow you to customize the appearance and behavior of [Twilio Flex](https://www.twilio.com/flex). If you want to learn more about the capabilities and how to use the API, check out our [Flex documentation](https://www.twilio.com/docs/flex).
 
-## Setup
 
-Make sure you have [Node.js](https://nodejs.org) as well as [`npm`](https://npmjs.com). We support Node >= 10.12 (and recommend the _even_ versions of Node). Afterwards, install the dependencies by running `npm install`:
+# Plugin
 
-```bash
-cd 
+This Twilio Flex Plugin enables your supervisors to see agents activity timeline, filter by selecting agents and choose time range to be displayed.
 
-# If you use npm
-npm install
-```
+To learn more about developing plugins on your Flex instance, refer to the [getting started guide](https://www.twilio.com/docs/flex/quickstart/getting-started-plugin).
 
-Next, please install the [Twilio CLI](https://www.twilio.com/docs/twilio-cli/quickstart) by running:
+## How it works
 
-```bash
-brew tap twilio/brew && brew install twilio
-```
+This Plugin uses following Twilio Products. It is easy to have it running quickly!
 
-Finally, install the [Flex Plugin extension](https://github.com/twilio-labs/plugin-flex/tree/v1-beta) for the Twilio CLI:
+- It uses [Twilio Functions](https://www.twilio.com/docs/runtime/functions) to get list of workers and list of events from Twilio API;
+- It uses the new [Twilio Paste](https://paste.twilio.design) - which is the base for all future Flex Plugins;
 
-```bash
-twilio plugins:install @twilio-labs/plugin-flex
-```
+## Oh, before installing it:
 
-## Development
+You need to enable [Flex UI 2.0](https://www.twilio.com/changelog/flex-ui-20-is-now-in-public-beta), the newest version of Flex!
 
-Run `twilio flex:plugins --help` to see all the commands we currently support. For further details on Flex Plugins refer to our documentation on the [Twilio Docs](https://www.twilio.com/docs/flex/developer/plugins/cli) page.
+## How to install
+
+We have to install 2 assets:
+
+- The Twilio Functions (back-end)
+- The Flex Plugin (front-end)
+
+#### To install the Twilio Functions:
+
+1. clone this repo;
+2. execute `cd ./functions` to go to the Twilio Functions folder.
+3. `npm install` to install the packages into your computer.
+4. rename `.env-example` from this folder to `.env` and follow the instructions in the `.env` file.
+5. `npm run deploy` to deploy the functions to your Twilio environment.
+6. Note the functions' domain in the output, you will need it to configure Plugin env. 
+
+#### To install the Flex Plugin:
+
+1. execute `cd ..` to go to the Plugin folder root.
+2. `npm install` to install the packages into your computer.
+3. rename `.env-example` from this folder to `.env` and follow the instructions in the `.env` file.
+4. You need to have the [Twilio CLI](https://www.twilio.com/docs/twilio-cli/quickstart). Type `twilio` in your terminal to see if you have it, if not, install it now.
+5. You need the [Flex Plugins CLI](https://www.twilio.com/docs/flex/developer/plugins/cli/install) . Type `twilio plugins` to make sure you have it, if not, install it.
+6. You need to create a new profile for your Twilio CLI, type `twilio profiles:list` to check if you are using it correctly. If not, add a new profile with the cmd `twilio profiles:add`.
+7. `npm run deploy -- --changelog "first deployment!"` to deploy this Plugin.
+8. Once **step 7** is finished, it will show the next steps, you will have to run the command mentioned there (something like `twilio flex:plugins:release ... etc etc`)
+9. We are done! Go to https://flex.twilio.com - You should see a new icon on the left-hand side. From there you can see Agents Timeline.
+
+## Contributions ✨
+Contributions of all kinds are welcome!
+
+## Used libraries
+`react-google-charts` - https://developers.google.com/chart/interactive/docs/gallery/timeline#overview
 
