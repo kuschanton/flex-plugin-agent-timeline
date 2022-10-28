@@ -1,6 +1,6 @@
 # Screenshots
 
-
+![Agents Timeline View 1](screenshots/screenshot_1.png)
 
 # Plugin
 
