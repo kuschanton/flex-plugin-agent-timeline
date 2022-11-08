@@ -15,7 +15,9 @@
     "@twilio-labs/serverless-runtime-types": "^1.1",
     "twilio": "^3.56",
     "@twilio/runtime-handler": "1.2.4",
-    "twilio-flex-token-validator": "^1.5.6"
+    "twilio-flex-token-validator": "^1.5.6",
+    "@types/luxon": "^3.1.0",
+    "luxon": "^3.1.0"
   },
   "devDependencies": {
     "twilio-run": "^3.4.4",

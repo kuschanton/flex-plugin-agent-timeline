@@ -2,6 +2,7 @@ import {StatusSlice} from '../model/StatusSlice'
 import {WorkerActivityUpdateEvent} from '../model/WorkerActivityUpdateEvent'
 import * as _ from 'lodash'
 import {Worker} from '../model/Worker'
+import {DateTime} from 'luxon'
 
 export const workerActivityUpdateEventToStatusSlice = (events: WorkerActivityUpdateEvent[], selectedAgents: Worker[]): StatusSlice[] =>
   _.flatten(selectedAgents.map(agent => {
@@ -17,8 +18,8 @@ const convertEventsForAgent = (events: WorkerActivityUpdateEvent[], agent: Worke
     new StatusSlice(
       agent.friendlyName,
       'No data',
-      new Date(0),
-      new Date(),
+      DateTime.fromMillis(0),
+      DateTime.now(),
     ),
   ]
 
@@ -26,19 +27,19 @@ const convertEventsForAgent = (events: WorkerActivityUpdateEvent[], agent: Worke
     .map(event => new StatusSlice(
       event.eventData.worker_name,
       event.eventData.worker_previous_activity_name,
-      new Date(event.eventDateMs - parseInt(event.eventData.worker_time_in_previous_activity_ms)),
-      new Date(event.eventDateMs),
+      DateTime.fromMillis(event.eventDateMs - parseInt(event.eventData.worker_time_in_previous_activity_ms)),
+      DateTime.fromMillis(event.eventDateMs),
     ))
 
   let lastEvent = _.last<WorkerActivityUpdateEvent>(events)!!
   let lastSlice = new StatusSlice(
     lastEvent.eventData.worker_name,
     lastEvent.eventData.worker_activity_name,
-    new Date(lastEvent.eventDateMs),
-    new Date(),
+    DateTime.fromMillis(lastEvent.eventDateMs),
+    DateTime.now(),
   )
 
-  console.log([...slices, lastSlice])
+  console.log(`Converted slices for agent ${agent.friendlyName} ${agent.sid}`, [...slices, lastSlice])
 
   return [...slices, lastSlice]
 }

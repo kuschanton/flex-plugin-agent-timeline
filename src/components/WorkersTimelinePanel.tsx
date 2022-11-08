@@ -8,8 +8,10 @@ import {WorkersMultiSelect} from './WorkersMultiSelect'
 import {WorkersTimeline} from './WorkersTimeline'
 import {apiListEventsForWorkers, apiListWorkers} from '../helper/Apis'
 import {WorkerActivityUpdateEvent} from '../model/WorkerActivityUpdateEvent'
-import {Spinner} from '@twilio-paste/core'
+import {Flex, Spinner} from '@twilio-paste/core'
 import _ from 'lodash'
+import {DatePickerComponent} from './DatePickerComponent'
+import {DateTime} from 'luxon'
 
 const WORKERS_LIMIT = 10
 
@@ -18,6 +20,10 @@ export const WorkersTimelinePanel = () => {
   const [fetchingWorkers, setFetchingWorkers] = useState(true)
   const [workers, setWorkers] = useState<Worker[]>([])
   const [selectedWorkers, setSelectedWorkers] = useState<Worker[]>([])
+
+  const [date, setDate] = useState(DateTime.now().toISODate())
+  const dateMin = DateTime.now().minus({days: 30}).toISODate()
+  const dateMax = DateTime.now().toISODate()
 
   const [fetchingEvents, setFetchingEvents] = useState(false)
   const [events, setEvents] = useState<WorkerActivityUpdateEvent[]>([])
@@ -47,7 +53,7 @@ export const WorkersTimelinePanel = () => {
     if (selectedWorkers.length > 0) {
       setFetchingEvents(true)
       // Fetch events for all workers
-      apiListEventsForWorkers(selectedWorkers.map(worker => worker.sid))
+      apiListEventsForWorkers(selectedWorkers.map(worker => worker.sid), date)
         .then(events => {
           console.log('events', JSON.stringify(events))
           setEvents(events)
@@ -61,27 +67,39 @@ export const WorkersTimelinePanel = () => {
       setEvents([])
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedWorkers])
+  }, [selectedWorkers, date])
 
-  const WorkersMultiSelectComponent = (props: { disabled?: boolean }) =>
-    <Box margin='space50' width='size50'>
-      <WorkersMultiSelect allWorkers={workers}
-                          selectedWorkers={selectedWorkers}
-                          setSelectedWorkers={setSelectedWorkers}
-                          workersLimit={WORKERS_LIMIT}
-                          disabled={!!props.disabled}/>
+  const ControlPanel = (props: { disabled?: boolean, hideTimeRangePicker?: boolean }) =>
+    <Box>
+      <Flex>
+        <Box margin='space50' width='size50'>
+          <WorkersMultiSelect allWorkers={workers}
+                              selectedWorkers={selectedWorkers}
+                              setSelectedWorkers={setSelectedWorkers}
+                              workersLimit={WORKERS_LIMIT}
+                              disabled={!!props.disabled}/>
+        </Box>
+        <DatePickerComponent value={date}
+                             setValue={setDate}
+                             dateMin={dateMin}
+                             dateMax={dateMax}
+                             disabled={props.disabled}/>
+      </Flex>
+      <TimeRangePicker value={timeRangeValue}
+                       setValue={setTimeRangeValue}
+                       hidden={props.hideTimeRangePicker}
+                       disabled={props.disabled}/>
     </Box>
 
 
   if (fetchingWorkers) {
     return <Loading/>
   } else if (selectedWorkers.length == 0) {
-    return <WorkersMultiSelectComponent/>
+    return <ControlPanel hideTimeRangePicker={true}/>
   } else if (fetchingEvents) {
     return (
       <Box>
-        <WorkersMultiSelectComponent disabled={true}/>
-        <TimeRangePicker value={timeRangeValue} setValue={setTimeRangeValue} disabled={true}/>
+        <ControlPanel disabled={true}/>
         <Loading/>
       </Box>
     )
@@ -89,22 +107,21 @@ export const WorkersTimelinePanel = () => {
 
     const slices = workerActivityUpdateEventToStatusSlice(events, selectedWorkers)
 
-    const timeRangeStartDate = dateAtHour(timeRangeStartHour)
-    const timeRangeEndDate = dateAtHour(timeRangeEndHour)
+    const timeRangeStartDate = dateAtHour(date, timeRangeStartHour)
+    const timeRangeEndDate = dateAtHour(date, timeRangeEndHour)
 
     const croppedSlices = cropSlicesToRange(slices, timeRangeStartDate, timeRangeEndDate)
 
     return (
       <Box>
-        <WorkersMultiSelectComponent/>
-        <TimeRangePicker value={timeRangeValue} setValue={setTimeRangeValue}/>
+        <ControlPanel/>
         <WorkersTimeline slices={croppedSlices}/>
       </Box>
     )
   }
 }
 
-const cropSlicesToRange = (slices: StatusSlice[], rangeStart: Date, rangeEnd: Date): StatusSlice[] =>
+const cropSlicesToRange = (slices: StatusSlice[], rangeStart: DateTime, rangeEnd: DateTime): StatusSlice[] =>
   slices.reduce((acc, next) => {
     if (next.end < rangeStart || next.start > rangeEnd) {
       // slice is out of range
@@ -124,11 +141,14 @@ const cropSlicesToRange = (slices: StatusSlice[], rangeStart: Date, rangeEnd: Da
     }
   }, new Array<StatusSlice>())
 
-const dateAtHour = (hour: number) => {
-  let date = new Date()
-  date.setHours(hour, 0, 0, 0)
-  return date
-}
+const dateAtHour = (date: string, hour: number) =>
+  DateTime.fromISO(date)
+    .set({
+      hour: hour,
+      minute: 0,
+      second: 0,
+      millisecond: 0,
+    })
 
 const Loading = () => <Box top='50%' left='50%' position='fixed'>
   <Spinner size='sizeIcon110' decorative={false} title='Loading'/>

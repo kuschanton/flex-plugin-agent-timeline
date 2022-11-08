@@ -6,13 +6,14 @@ export const TimeRangePicker = (
   props: {
     value: number[],
     setValue: ((value: (((prevState: number[]) => number[]) | number[])) => void),
-    disabled?: boolean
+    disabled?: boolean,
+    hidden?: boolean
   },
 ) => {
 
   let handleChange = (event: Event, newValue: number | number[]) => props.setValue(newValue as number[])
 
-  return <Box margin='space50' minWidth='1000px' width='100%'>
+  return <Box margin='space50' minWidth='1000px' width='100%' hidden={props.hidden}>
     <Slider
       getAriaLabel={() => 'Time range'}
       min={0}

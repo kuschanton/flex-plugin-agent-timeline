@@ -37,9 +37,9 @@ const convertToChartData = (slices: StatusSlice[]) => {
     {type: 'date', id: 'Start'},
     {type: 'date', id: 'End'},
   ],
-    ...slices.map(slice => [slice.workerName, slice.status, slice.start, slice.end]),
+    ...slices.map(slice => [slice.workerName, slice.status, slice.start.toJSDate(), slice.end.toJSDate()]),
   ]
-  console.log(result)
+  console.log('Chart data', result)
   return result
 }
 

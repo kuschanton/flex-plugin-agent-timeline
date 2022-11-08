@@ -1,6 +1,6 @@
 {
   "name": "agent-timeline",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "private": true,
   "scripts": {
     "postinstall": "flex-plugin pre-script-check",
@@ -8,19 +8,21 @@
     "deploy": "twilio flex:plugins:build && twilio flex:plugins:deploy"
   },
   "dependencies": {
-    "@emotion/react": "^11.10.4",
-    "@emotion/styled": "^11.10.4",
+    "@emotion/react": "^11.1.5",
+    "@emotion/styled": "^11.1.5",
     "@mui/material": "^5.10.9",
     "@twilio-paste/core": "^15.3.0",
     "@twilio-paste/icons": "^9.2.0",
-    "@twilio/flex-plugin-scripts": "5.2.23-beta.0",
+    "@twilio/flex-plugin-scripts": "6.0.3",
+    "@types/luxon": "^3.1.0",
+    "luxon": "^3.1.0",
     "prop-types": "^15.7.2",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-google-charts": "^4.0.0"
   },
   "devDependencies": {
-    "@twilio/flex-ui": "^2.0.0-beta.1",
+    "@twilio/flex-ui": "2.0.0-beta.2",
     "@types/lodash": "^4.14.186",
     "react-test-renderer": "17.0.2",
     "typescript": "^4"

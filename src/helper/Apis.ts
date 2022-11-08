@@ -23,9 +23,9 @@ export const apiListWorkers = async (): Promise<Worker[]> => {
   }
 }
 
-export const apiListEventsForWorkers = async (workerSids: string[]): Promise<WorkerActivityUpdateEvent[]> => {
+export const apiListEventsForWorkers = async (workerSids: string[], date: string): Promise<WorkerActivityUpdateEvent[]> => {
   try {
-    let promises = workerSids.map(sid => request('/get-events', {workerSid: sid}))
+    let promises = workerSids.map(sid => request('/get-events', {workerSid: sid, date: date}))
     let eventResponses = <ListEvents[]>await Promise.all(promises)
     return _.flatten(eventResponses.map(response => response.events))
   } catch (e: any) {

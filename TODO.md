@@ -2,4 +2,4 @@
 - [x] Proper README
 - [x] Check in function token if admin/supervisor
 - [x] Show plugin only to supervisors
-- [ ] Date picker
+- [x] Date picker

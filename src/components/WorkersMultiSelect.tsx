@@ -46,6 +46,7 @@ export const WorkersMultiSelect = (
   }
 
   return (<MultiselectCombobox
+    required
     hasError={props.selectedWorkers.length == 0 || props.selectedWorkers.length > props.workersLimit}
     labelText='Choose Agent(s)'
     selectedItemsLabelText='Selected Agents'

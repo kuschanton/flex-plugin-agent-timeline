@@ -7,6 +7,7 @@ import {
   ServerlessFunctionSignature,
 } from '@twilio-labs/serverless-runtime-types/types'
 import * as HelperType from './utils/helper.protected'
+import {DateTime} from 'luxon'
 
 const {ResponseOK, ohNoCatch, isSupervisor} = <typeof HelperType>require(Runtime.getFunctions()['utils/helper'].path)
 
@@ -19,9 +20,8 @@ type Env = {
 type Request = {
   workerSid: string,
   token: string
+  date: string
 }
-
-const WEEK_IN_MINUTES = 60 * 24 * 7
 
 export const handler: ServerlessFunctionSignature<Env, Request> = async function (
   context: Context<Env>,
@@ -41,8 +41,30 @@ export const handler: ServerlessFunctionSignature<Env, Request> = async function
     context.getTwilioClient().taskrouter.v1
       .workspaces(context.WORKSPACE_SID)
       .events
-      .list({workerSid: event.workerSid, eventType: 'worker.activity.update', minutes: WEEK_IN_MINUTES})
+      .list({
+          workerSid: event.workerSid,
+          eventType: 'worker.activity.update',
+          startDate: calculateStartDate(event.date),
+          endDate: calculateEndDate(event.date),
+        },
+      )
       .then(workers => ResponseOK({events: workers}, callback))
       .catch(err => ohNoCatch(err, callback))
   }
+}
+
+const calculateStartDate = (date: string): Date => {
+  let minStartDate = DateTime.now().minus({days: 29})
+  let calculatedStartDate = DateTime.fromISO(date).minus({days: 3})
+  let result = (calculatedStartDate < minStartDate ? minStartDate : calculatedStartDate).toJSDate()
+  console.log(result)
+  return result
+}
+
+const calculateEndDate = (date: string): Date => {
+  let maxEndDate = DateTime.now()
+  let calculatedEndDate = DateTime.fromISO(date).plus({days: 3})
+  let result = (maxEndDate < calculatedEndDate ? maxEndDate : calculatedEndDate).toJSDate()
+  console.log(result)
+  return result
 }
